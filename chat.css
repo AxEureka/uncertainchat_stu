@@ -60,7 +60,6 @@ a {
 
 
 /* メッセージ */
-/* メッセージ */
 .msg {
   margin: 8px 0;
   border-radius: 16px;
@@ -100,7 +99,6 @@ a {
   border-radius: 12px;
 }
 
-/* 自分 */
 /* 自分の吹き出し */
 .message-row.user .msg {
   background: #0084ff;
