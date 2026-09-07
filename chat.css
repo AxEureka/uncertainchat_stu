@@ -60,15 +60,17 @@ a {
 
 
 /* メッセージ */
+/* メッセージ */
 .msg {
-  margin:8px 0;
-  border-radius:16px;
-  max-width:65%;
-  width:fit-content;
-  font-size:1.05em;
-  padding:12px 16px;
-  word-break:break-word;
-  line-height:1.4;
+  margin: 8px 0;
+  border-radius: 16px;
+  max-width: 65%;
+  width: fit-content;
+  font-size: 1.05em;
+  padding: 12px 16px;
+  word-break: break-word;
+  line-height: 1.4;
+  box-sizing: border-box;
 }
 
 /* 相手の吹き出し */
@@ -76,6 +78,14 @@ a {
   background: #e5e5ea;
 }
 
+/* 自分の吹き出し */
+.msg.user {
+  background: #0084ff;
+  color: white;
+  width: fit-content;
+  max-width: 65%;
+  text-align: left;
+}
 #partnerReply{
   font-size: clamp(28px, 3vw, 48px);
   font-weight: 700;
@@ -91,9 +101,13 @@ a {
 }
 
 /* 自分 */
-.user {
-  background:#0084ff;
-  color:white;
+/* 自分の吹き出し */
+.message-row.user .msg {
+  background: #0084ff;
+  color: white;
+  width: fit-content;
+  max-width: 65%;
+  text-align: left;
 }
 .msg.system {
   background: transparent;
