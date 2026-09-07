@@ -92,11 +92,9 @@ a {
 
 /* 自分 */
 .user {
-  background: #0084ff;
-  color: white;
-  margin-left: auto;
+  background:#0084ff;
+  color:white;
 }
-
 .msg.system {
   background: transparent;
   color: #888;
@@ -171,33 +169,41 @@ input {
   display: flex;
   align-items: flex-start;
   margin: 8px 0;
+  width: 100%;
 }
 
-/* 相手側 */
+/* 相手のメッセージ */
 .message-row.partner {
   justify-content: flex-start;
 }
 
-/* アイコン用の固定領域 */
-.avatar {
-  width: 52px;
-  height: 52px;
-  flex: 0 0 52px;
-  margin-right: 10px;
-}
-
-/* 顔写真 */
-.avatar img {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  object-fit: cover;
-  display: block;
+/* 自分のメッセージ */
+.message-row.user {
+  justify-content: flex-end;
 }
 
 /* 吹き出し */
 .message-row .msg {
   margin: 0;
+  width: auto;
+  max-width: 65%;
+  box-sizing: border-box;
+}
+
+/* 顔のスペース */
+.avatar {
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
+  margin-right: 10px;
+}
+
+.avatar img {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
 }
 
 /* スマホ対応 */
