@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="chat.css">
+<title>チャット実験</title>
+</head>
+
+<body>
+<div class="container">
+
+<div id="screen1" class="screen active">
+<h2>実験の説明</h2>
+<p>次のページから、架空のテキストチャットを体験していただきます。<br>
+まず名前と性別を回答してください。その後、指示に従って相手への質問を選んだり、回答を入力したりしてください。<br>チャット中、ブラウザの戻るボタンは押さないでください。<br>説明を読み終わったら「次へ」ボタンを押してください。</p>
+<button onclick="next(2)">次へ</button>
+</div>
+
+<div id="screen2" class="screen">
+<h2>あなたの名前(ニックネーム可)と性別を回答してください。<br>準備ができたら下の「開始」ボタンを押してください。チャットがスタートします。</h2>
+
+<label for="gender">名前(ニックネーム可)を入力してください</label><br><br>
+<input id="name" placeholder="名前"><br><br>
+  
+<label for="gender">あなたの性別を回答してください</label><br><br>
+<select id="gender">
+<option value="male">男性</option>
+<option value="female">女性</option>
+<option value="other">その他</option>
+</select><br><br>
+<button onclick="startChat()">開始</button>
+</div>
+
+<div id="screen3" class="screen">
+
+<div class="chat-box">
+  <div id="chat"></div>
+</div>
+
+<div id="choices"></div>
+
+<div class="input-area">
+  <input id="input" placeholder="入力してください">
+  <button onclick="sendInput()">送信</button>
+</div>
+
+</div>
+<div id="screen5" class="screen">
+<h2>追加チャットを行いますか？</h2>
+<p>お互いが希望した場合、この後、同じ相手と追加チャットを行うことができます。<br>追加チャットを行いますか？</p>
+
+<div id="choiceBlock">
+<button onclick="selectFinal('行う')">行う</button>
+<button onclick="selectFinal('別の日程なら行う')">別の日程なら行う</button>
+<button onclick="selectFinal('行わない')">行わない</button>
+</div>
+
+<div id="resultBlock" style="display:none;">
+<p id="partnerReply"></p>
+<button onclick="goToForm()">次へ</button>
+</div>
+</div>
+
+<div id="screen4" class="screen">
+<h2>チャットは以上で終了です。<br>下の「質問フォームへ」ボタンを押し、フォームに回答してください</h2>
+<p><a id="formLink" href="#">質問フォームへ</a></p>
+</div>
+
+</div>
+
+<script>
+let phase = 0;
+let userName = "";
+let partnerName = "";
+let firstChoice = null;
+let secondChoice = null;
+let chatStartTime = null;
+let chatEndTime = null;
+let participantChoice = null;
+let isFinal = false;
+let questionsAnswered = { first: false, second: false };
+
+const participantId = "P" + Date.now() + Math.floor(Math.random()*1000);
+
+const conditionNumber =
+  parseInt(participantId.replace("P","")) % 4;
+
+let condition;
+
+switch(conditionNumber){
+  case 0:
+    condition = {
+      liking: "high",
+      certainty: "certain"
+    };
+    break;
+
+  case 1:
+    condition = {
+      liking: "high",
+      certainty: "uncertain"
+    };
+    break;
+
+  case 2:
+    condition = {
+      liking: "low",
+      certainty: "certain"
+    };
+    break;
+
+  case 3:
+    condition = {
+      liking: "low",
+      certainty: "uncertain"
+    };
+    break;
+}
+
+function next(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen'+n).classList.add('active');
+}
+
+function setInputMode(mode){
+  const input = document.getElementById('input');
+  input.disabled = (mode !== "free");
+  input.placeholder = mode === "free" ? "入力してください" : "質問を選んでください";
+
+  if(mode === "free"){
+    addMsg("回答を入力してください。", "system");
+  }else if(mode === "choice"){
+    addMsg("質問を選んでください。", "system");
+  }
+}
+
+function disableInput(){
+  const input = document.getElementById('input');
+  input.disabled = true;
+  input.placeholder = "お待ちください";
+}
+  
+function addMsg(text, cls){
+  const div = document.createElement('div');
+  div.className = 'msg ' + cls;
+  div.innerText = text;
+
+  document.getElementById('chat').appendChild(div);
+
+  window.scrollTo({
+    top: document.body.scrollHeight,
+    behavior: "smooth"
+  });
+}
+
+function showTyping(){
+
+  const div = document.createElement('div');
+  div.className = 'msg system typing';
+  div.id = 'typing';
+
+  div.innerText = `相手が入力しています...`;
+
+  document.getElementById('chat').appendChild(div);
+
+  div.scrollIntoView({
+    behavior: "smooth",
+    block: "end"
+  });
+}
+
+function hideTyping(){
+  const t = document.getElementById('typing');
+  if(t) t.remove();
+}
+  
+function partnerReply(text, callback = null){
+
+  disableInput();
+  showTyping();
+
+  const delay = Math.min(
+    3000,
+    1000 + text.length * 40
+  );
+
+  setTimeout(()=>{
+
+    hideTyping();
+
+    addMsg(text,'partner');
+
+    if(callback){
+      callback();
+    }
+
+  },delay);
+}
+
+function startChat(){
+  chatStartTime = new Date().toISOString();
+  userName = document.getElementById('name').value;
+  const gender = document.getElementById('gender').value;
+  if(!userName){ alert("名前を入力してください"); return; }
+
+  if(gender === "male") partnerName = "アヤ";
+  else if(gender === "female") partnerName = "リョウ";
+  else partnerName = Math.random() < 0.5 ? "アヤ" : "リョウ";
+
+  next(3);
+  disableInput();
+
+  partnerReply(
+    `こんにちは、${partnerName}です。`,
+    ()=>{
+      partnerReply(
+        `${userName}さんですか？`,
+        ()=> setInputMode("free")
+      );
+    }
+  );
+}
+
+function sendInput(){
+  const val = document.getElementById('input').value;
+  if(!val) return;
+
+  addMsg(val,'user');
+  document.getElementById('input').value = "";
+  
+  if(isFinal){
+    disableInput();
+  }
+  
+  flow();
+}
+
+function flow(){
+  if(phase === 0){
+    partnerReply(
+      "よろしくお願いします！",
+      showChoices
+    );
+  }
+  else if(phase === 1){
+    partnerReply(
+      "〇〇さんは？",
+      ()=> setInputMode("free")
+    );
+  }
+ else if(phase === 2){
+
+  partnerReply(
+    "いいですね",
+    ()=>{
+      disableInput();
+      addMsg("相手が質問を選んでいます",'system');
+  
+      setTimeout(()=>{
+  
+        addMsg(
+          "将来やってみたいことはありますか？",
+          "partner"
+        );
+  
+        setInputMode("free");
+  
+      },2500);
+  
+    }
+  );
+  }
+  else if(phase === 3){
+
+  partnerReply(
+    "私は独立を考えています。まだ何もしていませんが…。",
+    showChoices
+  );
+
+}
+ 
+  else if(phase === 5){
+
+  addMsg("チャットは後1ターンで終了です。",'system');
+  addMsg("次がお互いに最後のメッセージとなります。",'system');
+
+  const msg = condition.liking === 'high'
+      ? '今日はありがとう。とても楽しかったのでまたお話したいです！'
+      : '今日はありがとう。';
+
+  partnerReply(
+    msg,
+    ()=>{
+      setInputMode("free");
+      isFinal = true;
+    }
+  );
+
+}
+ else if(isFinal){
+
+   disableInput();
+   addMsg("チャットを終了中。しばらくお待ちください。",'system');
+
+  setTimeout(()=>{
+    chatEndTime = new Date().toISOString();
+    next(5);
+  },4000);
+
+}
+
+  phase++;
+}
+
+function showChoices(){
+  const div = document.getElementById('choices');
+  div.innerHTML = '';
+  setInputMode("choice");
+
+  let options;
+  if(!firstChoice){
+    options = [
+      {text:"休みの日は何をしていますか？", key:"weekend"},
+      {text:"恋人にするならどんな人がいいですか？", key:"type"}
+    ];
+  }else{
+    options = [
+      {text: firstChoice === 'weekend' ? "恋人にするならどんな人がいいですか？" : "休みの日は何をしていますか？", 
+       key: firstChoice === 'weekend' ? 'type' : 'weekend'}
+    ];
+  }
+
+  options.forEach(opt=>{
+
+    const btn = document.createElement('button');
+    btn.innerText = opt.text;
+  
+    btn.onclick = ()=>{
+
+      addMsg(opt.text,'user');
+    
+      div.innerHTML='';
+    
+      if(!firstChoice){
+        firstChoice = opt.key;
+        secondChoice = opt.key === 'weekend'
+          ? 'type'
+          : 'weekend';
+      }
+    
+      partnerReply(
+        getReply(opt.key),
+        ()=>{
+          setTimeout(()=>{
+            partnerReply(
+              `${userName}さんは？`,
+              ()=> setInputMode("free")
+            );
+          },500);
+        }
+      );
+
+  phase++;
+};
+  
+    div.appendChild(btn);
+  });
+}
+
+function getReply(key){
+  return key === 'weekend'
+    ? "本を読んだり、友達とごはんに行ったりしてます"
+    : "笑わせてくれる人、優しい人、一緒にいて楽しい人が好きです。";
+}
+
+function selectFinal(choice){
+
+  participantChoice = choice;
+
+  document.getElementById('choiceBlock').style.display = 'none';
+
+  const reply = condition.certainty === 'certain'
+    ? '相手の回答：行う'
+    : '相手の回答：別の日程なら行う';
+
+  document.getElementById('partnerReply').innerText = reply;
+  document.getElementById('resultBlock').style.display = 'block';
+}
+  
+// --- ここからログ保存＋フォーム連携 ---
+async function saveChatLog(){
+  const chatMsgs = [...document.querySelectorAll('#chat .msg')].map(d=>({
+    text: d.innerText,
+    cls: d.className
+  }));
+
+  const durationSec =
+    chatStartTime && chatEndTime
+      ? Math.round(
+          (new Date(chatEndTime) - new Date(chatStartTime))
+          / 1000
+        )
+      : null;
+
+  const logData = {
+    participantId,
+    chatStartTime,
+    chatEndTime,
+    durationSec,
+    participantChoice,
+    condition: { 
+      liking: condition.liking === 'high' ? 1 : 0, 
+      certainty: condition.certainty === 'certain' ? 1 : 0 
+    },
+    chat: chatMsgs
+  };
+
+  try{
+    await fetch("https://script.google.com/macros/s/AKfycbzh-n3xPsAUggnXrqVCJbkQzZBbR4_eceqgR9VWlXlw-es4_PfOheON2bJffU6a3MTG/exec", {
+      method: "POST",
+      body: JSON.stringify(logData),
+      mode: "no-cors"
+    });
+
+    // GASはURL返さないのでダミー
+    return "saved";
+  }catch(e){
+    console.error("ログ保存失敗:", e);
+    return "";
+  }
+}
+
+async function goToForm(){
+  next(4);
+
+  const logUrl = await saveChatLog(); // 自動保存してURL取得
+  const likingCode = condition.liking === 'high' ? 1 : 0;
+  const certaintyCode = condition.certainty === 'certain' ? 1 : 0;
+
+  // GoogleフォームURLに participantId, 条件, ログURL を渡す
+  const url = `https://docs.google.com/forms/d/e/1FAIpQLScU0aHR0LlC2TCniUz0ZhXG-ULv-AXwBzvXxuTjb34hJa6mNQ/viewform?usp=pp_url` +
+              `&entry.1787887357=${participantId}` +
+              `&entry.2146909032=${encodeURIComponent(logUrl)}` +
+              `&entry.186622541=${likingCode}` +
+              `&entry.249003931=${certaintyCode}`;
+  document.getElementById('formLink').href = url;
+}             
+</script>
+</body>
+</html>
