@@ -204,15 +204,15 @@ input {
 
 /* 顔のスペース */
 .avatar {
-  width: 56px;
-  height: 56px;
-  flex: 0 0 56px;
-  margin-right: 10px;
+  width: 80px;
+  height: 80px;
+  flex: 0 0 80px;
+  margin-right: 12px;
 }
 
 .avatar img {
-  width: 56px;
-  height: 56px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   object-fit: cover;
   display: block;
