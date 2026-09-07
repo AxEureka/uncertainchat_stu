@@ -344,7 +344,7 @@ function flow(){
   else if(phase === 3){
 
   partnerReply(
-    "私は独立を考えています。まだ何もしていませんが…。",
+    "私は起業を考えています。まだ何もしていませんが…。",
     showChoices
   );
 
@@ -440,7 +440,7 @@ function showChoices(){
 
 function getReply(key){
   return key === 'weekend'
-    ? "本を読んだり、友達とごはんに行ったりしてます"
+    ? "本を読んだり、友達とごはんに行ったりしてます。"
     : "笑わせてくれる人、優しい人、一緒にいて楽しい人が好きです。";
 }
 
@@ -515,7 +515,7 @@ async function goToForm(){
               `&entry.1787887357=${participantId}` +
               `&entry.2146909032=${encodeURIComponent(logUrl)}` +
               `&entry.186622541=${likingCode}` +
-              `&entry.249003931=${certaintyCode}`;
+              `&entry.249003931=${certaintyCode}`+
               `&entry.1176119572=${faceCode}`;
   document.getElementById('formLink').href = url;
 }             
