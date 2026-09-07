@@ -84,7 +84,7 @@ let questionsAnswered = { first: false, second: false };
 const participantId = "P" + Date.now() + Math.floor(Math.random()*1000);
 
 const conditionNumber =
-  parseInt(participantId.replace("P","")) % 4;
+  parseInt(participantId.replace("P","")) % 8;
 
 let condition;
 
@@ -92,28 +92,64 @@ switch(conditionNumber){
   case 0:
     condition = {
       liking: "high",
-      certainty: "certain"
+      certainty: "certain",
+      face: "with"
     };
     break;
 
   case 1:
     condition = {
       liking: "high",
-      certainty: "uncertain"
+      certainty: "certain",
+      face: "without"
     };
     break;
 
   case 2:
     condition = {
-      liking: "low",
-      certainty: "certain"
+      liking: "high",
+      certainty: "uncertain",
+      face: "with"
     };
     break;
 
   case 3:
     condition = {
+      liking: "high",
+      certainty: "uncertain",
+      face: "without"
+    };
+    break;
+
+  case 4:
+    condition = {
       liking: "low",
-      certainty: "uncertain"
+      certainty: "certain",
+      face: "with"
+    };
+    break;
+
+  case 5:
+    condition = {
+      liking: "low",
+      certainty: "certain",
+      face: "without"
+    };
+    break;
+
+  case 6:
+    condition = {
+      liking: "low",
+      certainty: "uncertain",
+      face: "with"
+    };
+    break;
+
+  case 7:
+    condition = {
+      liking: "low",
+      certainty: "uncertain",
+      face: "without"
     };
     break;
 }
@@ -452,7 +488,7 @@ async function saveChatLog(){
   };
 
   try{
-    await fetch("https://script.google.com/macros/s/AKfycbzh-n3xPsAUggnXrqVCJbkQzZBbR4_eceqgR9VWlXlw-es4_PfOheON2bJffU6a3MTG/exec", {
+    await fetch("https://script.google.com/macros/s/AKfycbyF0SEZnFqEtTELf3lFk54KfV85aIVGIpwZ0V5wNUIdYPzsDUtMrLP_XiJ-BX0u8elX/exec", {
       method: "POST",
       body: JSON.stringify(logData),
       mode: "no-cors"
