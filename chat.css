@@ -70,8 +70,8 @@ a {
   line-height: 1.4;
 }
 
-/* 相手 */
-.partner {
+/* 相手の吹き出し */
+.msg.partner {
   background: #e5e5ea;
 }
 
@@ -163,6 +163,40 @@ input {
 
 #formLink:hover {
   background: #f5f5f5;
+}
+
+/* チャットメッセージ全体 */
+.message-row {
+  display: flex;
+  align-items: flex-start;
+  margin: 8px 0;
+}
+
+/* 相手側 */
+.message-row.partner {
+  justify-content: flex-start;
+}
+
+/* アイコン用の固定領域 */
+.avatar {
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+  margin-right: 10px;
+}
+
+/* 顔写真 */
+.avatar img {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+/* 吹き出し */
+.message-row .msg {
+  margin: 0;
 }
 
 /* スマホ対応 */
