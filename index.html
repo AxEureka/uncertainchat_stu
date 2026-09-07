@@ -508,13 +508,15 @@ async function goToForm(){
   const logUrl = await saveChatLog(); // 自動保存してURL取得
   const likingCode = condition.liking === 'high' ? 1 : 0;
   const certaintyCode = condition.certainty === 'certain' ? 1 : 0;
+   const faceCode =  condition.face === 'with' ? 1 : 0;
 
   // GoogleフォームURLに participantId, 条件, ログURL を渡す
-  const url = `https://docs.google.com/forms/d/e/1FAIpQLScU0aHR0LlC2TCniUz0ZhXG-ULv-AXwBzvXxuTjb34hJa6mNQ/viewform?usp=pp_url` +
+  const url = `https://docs.google.com/forms/d/e/1FAIpQLSd2T7p-VQUIT0UKkrzxJahDrWl4iAJQJ0ZbQyVVzYqRIQqn7w/viewform?usp=publish-editor` +
               `&entry.1787887357=${participantId}` +
               `&entry.2146909032=${encodeURIComponent(logUrl)}` +
               `&entry.186622541=${likingCode}` +
               `&entry.249003931=${certaintyCode}`;
+              `&entry.1176119572=${faceCode}`;
   document.getElementById('formLink').href = url;
 }             
 </script>
